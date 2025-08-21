@@ -441,7 +441,8 @@
                 <h2>Game Over!</h2>
                 <p>Your Score: <span id="finalScore">0</span></p>
                 <div class="name-input-container" id="nameInputContainer" style="display: none;">
-                    <p>🎉 New high score! Enter your name:</p>
+                    <p>🎉 New high score!</p>
+                    <p>Enter your name:</p>
                     <input type="text" class="name-input" id="playerName" placeholder="Enter name (10 chars max)" maxlength="10">
                     <br>
                     <button class="submit-score-btn" onclick="submitScore()">Submit Score</button>
@@ -472,6 +473,7 @@
         let dy = 0;
         let score = 0;
         let gameRunning = false;
+        let directionChanged = false; // Prevent multiple direction changes per frame
 
         // Leaderboard functions
         function getLeaderboard() {
@@ -617,6 +619,9 @@
             // Only move if game is running and snake has direction
             if (!gameRunning || (dx === 0 && dy === 0)) return;
             
+            // Reset direction change flag at the start of each movement
+            directionChanged = false;
+            
             const head = {x: snake[0].x + dx, y: snake[0].y + dy};
 
             // Check wall collision
@@ -672,6 +677,7 @@
             dy = 0;
             score = 0;
             gameRunning = false;
+            directionChanged = false;
             scoreElement.textContent = score;
             gameOverElement.style.display = 'none';
             nameInputContainer.style.display = 'none';
@@ -692,6 +698,9 @@
                 e.preventDefault();
             }
 
+            // Don't allow direction change if one has already been made this frame
+            if (directionChanged) return;
+
             // Don't allow reverse direction
             switch(e.code) {
                 case 'ArrowUp':
@@ -699,6 +708,7 @@
                     if (dy !== 1) { 
                         dx = 0; dy = -1; 
                         gameRunning = true;
+                        directionChanged = true;
                     }
                     break;
                 case 'ArrowDown':
@@ -706,6 +716,7 @@
                     if (dy !== -1) { 
                         dx = 0; dy = 1; 
                         gameRunning = true;
+                        directionChanged = true;
                     }
                     break;
                 case 'ArrowLeft':
@@ -713,6 +724,7 @@
                     if (dx !== 1) { 
                         dx = -1; dy = 0; 
                         gameRunning = true;
+                        directionChanged = true;
                     }
                     break;
                 case 'ArrowRight':
@@ -720,6 +732,7 @@
                     if (dx !== -1) { 
                         dx = 1; dy = 0; 
                         gameRunning = true;
+                        directionChanged = true;
                     }
                     break;
             }
@@ -739,6 +752,9 @@
             e.preventDefault();
             if (!touchStartX || !touchStartY) return;
 
+            // Don't allow direction change if one has already been made this frame
+            if (directionChanged) return;
+
             let touchEndX = e.changedTouches[0].clientX;
             let touchEndY = e.changedTouches[0].clientY;
 
@@ -750,18 +766,22 @@
                 if (diffX > 0 && dx !== 1) {
                     dx = -1; dy = 0; // Left
                     gameRunning = true;
+                    directionChanged = true;
                 } else if (diffX < 0 && dx !== -1) {
                     dx = 1; dy = 0; // Right
                     gameRunning = true;
+                    directionChanged = true;
                 }
             } else {
                 // Vertical swipe
                 if (diffY > 0 && dy !== 1) {
                     dx = 0; dy = -1; // Up
                     gameRunning = true;
+                    directionChanged = true;
                 } else if (diffY < 0 && dy !== -1) {
                     dx = 0; dy = 1; // Down
                     gameRunning = true;
+                    directionChanged = true;
                 }
             }
 
