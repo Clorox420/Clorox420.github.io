@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JoJo's Controlled Environments</title>
+    <title>Custom Grow Controlled Environments</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
@@ -16,7 +16,7 @@
             --surface: #f8fafc;
             --border: #e2e8f0;
             --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-            --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient: #000000;
         }
 
         * {
@@ -87,7 +87,7 @@
         }
 
         .tab.active {
-            background: var(--secondary);
+            background: #000000;
             color: white;
         }
 
@@ -397,9 +397,12 @@
     <header class="header">
         <div class="header-container">
             <a href="#" class="logo" data-tab="home">
-                JoJo's Controlled Environments
+                Custom Grow Controlled Environments
             </a>
-
+            <div class="nav-tabs">
+                <button class="tab active" data-tab="home">Home</button>
+                <button class="tab" data-tab="projects">Previous Projects</button>
+            </div>
         </div>
     </header>
 
@@ -407,9 +410,11 @@
         <div id="home" class="tab-content active">
             <div class="hero">
                 <h1 class="hero-title">Aquaponic and Hydroponic Systems Designed for You</h1>
-                <p class="hero-subtitle">Hand-made controlled environments designed for your every need</p>
+                <p class="hero-subtitle">Hand-made controlled environments designed for your every need.</p>
             </div>
+        </div>
 
+        <div id="projects" class="tab-content">
             <!-- Previous Projects Section -->
             <div class="section">
                 <h2 class="section-title">Previous Projects</h2>
@@ -484,12 +489,39 @@
                 </div>
             </div>
         </div>
-
-
-
     </main>
 
     <script>
+        // Tab functionality
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const targetTab = tab.getAttribute('data-tab');
+                
+                // Remove active class from all tabs and content
+                tabs.forEach(t => t.classList.remove('active'));
+                tabContents.forEach(tc => tc.classList.remove('active'));
+                
+                // Add active class to clicked tab and corresponding content
+                tab.classList.add('active');
+                document.getElementById(targetTab).classList.add('active');
+            });
+        });
+
+        // Logo click to go to home
+        document.querySelector('.logo').addEventListener('click', (e) => {
+            e.preventDefault();
+            // Remove active class from all tabs and content
+            tabs.forEach(t => t.classList.remove('active'));
+            tabContents.forEach(tc => tc.classList.remove('active'));
+            
+            // Activate home tab
+            document.querySelector('[data-tab="home"]').classList.add('active');
+            document.getElementById('home').classList.add('active');
+        });
+
         // Header scroll effect
         window.addEventListener('scroll', () => {
             const header = document.querySelector('.header');
