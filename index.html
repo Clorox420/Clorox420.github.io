@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Clorox's Website</title>
     <style>
         * {
@@ -17,28 +17,32 @@
             color: white;
             background: black;
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 15px;
         }
 
         header {
-            padding: 30px;
+            padding: 20px 0;
             text-align: center;
         }
 
         h1 {
-            font-size: 3rem;
+            font-size: clamp(1.8rem, 5vw, 3rem);
             color: white;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
+            padding: 0 10px;
         }
 
         .spinning-video {
-            width: 600px;
-            height: 600px;
+            width: min(90vw, 400px);
+            height: min(90vw, 400px);
+            max-width: 600px;
+            max-height: 600px;
             border-radius: 50%;
             animation: spin 3s linear infinite;
             display: block;
@@ -55,9 +59,9 @@
             position: relative;
             text-align: center;
             background: rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 20px;
-            margin-top: 30px;
+            border-radius: 15px;
+            padding: 15px;
+            margin-top: 20px;
             box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
             backdrop-filter: blur(4px);
             border: 1px solid rgba(255, 255, 255, 0.18);
@@ -65,22 +69,25 @@
 
         .game-title {
             color: white;
-            margin: 0 0 10px 0;
+            margin: 0 0 15px 0;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-            font-size: 1.5rem;
+            font-size: clamp(1rem, 4vw, 1.5rem);
+            padding: 0 10px;
+            line-height: 1.3;
         }
 
         .leaderboard-toggle {
             background: rgba(255, 255, 255, 0.2);
             color: white;
             border: 1px solid rgba(255, 255, 255, 0.3);
-            padding: 8px 16px;
+            padding: 10px 16px;
             border-radius: 10px;
             cursor: pointer;
             font-size: 14px;
             margin: 10px 0;
             transition: all 0.3s ease;
             backdrop-filter: blur(2px);
+            min-height: 44px; /* Better touch target */
         }
 
         .leaderboard-toggle:hover {
@@ -101,7 +108,7 @@
         }
 
         .leaderboard-dropdown.open {
-            max-height: 300px;
+            max-height: 350px;
             padding: 15px;
         }
 
@@ -121,11 +128,12 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 5px 10px;
-            margin: 3px 0;
+            padding: 8px 10px;
+            margin: 5px 0;
             background: rgba(255, 255, 255, 0.1);
             border-radius: 5px;
             font-size: 14px;
+            min-height: 36px;
         }
 
         .leaderboard-entry:first-child {
@@ -149,28 +157,34 @@
         .leaderboard-rank {
             font-weight: bold;
             margin-right: 10px;
-            min-width: 20px;
+            min-width: 25px;
+            flex-shrink: 0;
         }
 
         .leaderboard-name {
             flex-grow: 1;
             text-align: left;
             margin-right: 10px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         .leaderboard-score {
             font-weight: bold;
+            flex-shrink: 0;
         }
 
         .empty-leaderboard {
             color: rgba(255, 255, 255, 0.6);
             font-style: italic;
-            padding: 20px;
+            padding: 20px 10px;
+            line-height: 1.4;
         }
 
         .score {
             color: white;
-            font-size: 18px;
+            font-size: clamp(16px, 4vw, 18px);
             margin-bottom: 15px;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
         }
@@ -180,6 +194,8 @@
             border-radius: 10px;
             background: #1a1a2e;
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            max-width: 100%;
+            height: auto;
         }
 
         .game-over {
@@ -189,14 +205,25 @@
             transform: translate(-50%, -50%);
             background: rgba(0, 0, 0, 0.95);
             color: white;
-            padding: 30px;
+            padding: 25px 20px;
             border-radius: 15px;
             text-align: center;
             display: none;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             z-index: 1000;
             border: 2px solid rgba(255, 255, 255, 0.3);
-            min-width: 300px;
+            min-width: 280px;
+            max-width: 90vw;
+        }
+
+        .game-over h2 {
+            font-size: clamp(1.2rem, 5vw, 1.5rem);
+            margin-bottom: 15px;
+        }
+
+        .game-over p {
+            font-size: clamp(14px, 4vw, 16px);
+            margin-bottom: 10px;
         }
 
         .name-input-container {
@@ -207,13 +234,15 @@
             background: rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.3);
             color: white;
-            padding: 10px;
+            padding: 12px;
             border-radius: 5px;
             font-size: 16px;
             text-align: center;
+            width: 100%;
             max-width: 200px;
             margin: 10px auto;
             display: block;
+            min-height: 44px; /* Better touch target */
         }
 
         .name-input::placeholder {
@@ -228,8 +257,10 @@
             border-radius: 25px;
             cursor: pointer;
             font-size: 16px;
-            margin: 5px;
+            margin: 8px 5px;
             transition: all 0.3s ease;
+            min-height: 44px; /* Better touch target */
+            min-width: 120px;
         }
 
         .restart-btn:hover, .submit-score-btn:hover {
@@ -246,12 +277,137 @@
             background: #059669;
         }
 
-        @media (max-width: 500px) {
+        /* Mobile-specific optimizations */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            header {
+                padding: 15px 0;
+            }
+
+            .game-container {
+                padding: 12px;
+                margin-top: 15px;
+                border-radius: 12px;
+            }
+
+            .spinning-video {
+                width: min(85vw, 350px);
+                height: min(85vw, 350px);
+            }
+
+            .leaderboard-entry {
+                font-size: 13px;
+                padding: 6px 8px;
+            }
+
+            .leaderboard-rank {
+                min-width: 20px;
+                font-size: 12px;
+            }
+
+            .game-over {
+                padding: 20px 15px;
+                min-width: 260px;
+            }
+
+            .restart-btn, .submit-score-btn {
+                display: block;
+                width: 100%;
+                max-width: 200px;
+                margin: 8px auto;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 8px;
+            }
+
+            h1 {
+                margin-bottom: 15px;
+            }
+
+            .spinning-video {
+                width: min(80vw, 300px);
+                height: min(80vw, 300px);
+            }
+
+            .game-title {
+                margin-bottom: 12px;
+            }
+
+            .leaderboard-toggle {
+                padding: 8px 14px;
+                font-size: 13px;
+            }
+
+            .leaderboard-entry {
+                font-size: 12px;
+                padding: 5px 6px;
+                margin: 3px 0;
+            }
+
+            .leaderboard-title {
+                font-size: 14px;
+            }
+
             #gameCanvas {
                 width: 90vw;
                 height: 90vw;
-                max-width: 400px;
-                max-height: 400px;
+                max-width: 350px;
+                max-height: 350px;
+            }
+
+            .game-over {
+                padding: 18px 12px;
+                min-width: 240px;
+                max-width: 85vw;
+            }
+        }
+
+        /* Landscape mobile optimization */
+        @media (max-height: 600px) and (orientation: landscape) {
+            .spinning-video {
+                width: min(40vh, 250px);
+                height: min(40vh, 250px);
+            }
+
+            h1 {
+                font-size: clamp(1.5rem, 4vh, 2rem);
+                margin-bottom: 10px;
+            }
+
+            header {
+                padding: 10px 0;
+            }
+
+            .game-container {
+                margin-top: 10px;
+            }
+        }
+
+        /* Prevent zoom on form inputs on iOS */
+        @media (max-width: 768px) {
+            input, select, textarea {
+                font-size: 16px;
+            }
+        }
+
+        /* Touch-friendly improvements */
+        @media (hover: none) and (pointer: coarse) {
+            .leaderboard-toggle:hover,
+            .restart-btn:hover,
+            .submit-score-btn:hover {
+                transform: none;
+            }
+            
+            .leaderboard-toggle:active,
+            .restart-btn:active,
+            .submit-score-btn:active {
+                transform: scale(0.98);
             }
         }
     </style>
