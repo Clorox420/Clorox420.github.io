@@ -33,6 +33,22 @@
         h1 {
             font-size: 3rem;
             color: white;
+            margin-bottom: 30px;
+        }
+
+        .spinning-video {
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            animation: spin 3s linear infinite;
+            display: block;
+            margin: 0 auto;
+            object-fit: cover;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
@@ -40,6 +56,10 @@
     <div class="container">
         <header>
             <h1>Clorox's Website</h1>
+            <video class="spinning-video" autoplay muted loop>
+                <source src="Blehh.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
         </header>
     </div>
 </body>
