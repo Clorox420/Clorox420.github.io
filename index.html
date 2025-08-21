@@ -52,7 +52,7 @@
         }
 
         .game-container {
-            position: relative; /* Added this for absolute positioning context */
+            position: relative;
             text-align: center;
             background: rgba(255, 255, 255, 0.1);
             border-radius: 20px;
@@ -70,6 +70,104 @@
             font-size: 1.5rem;
         }
 
+        .leaderboard-toggle {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 8px 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 10px 0;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(2px);
+        }
+
+        .leaderboard-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .leaderboard-dropdown {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            margin: 10px 0 20px 0;
+            padding: 15px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+            backdrop-filter: blur(4px);
+        }
+
+        .leaderboard-dropdown.open {
+            max-height: 300px;
+            padding: 15px;
+        }
+
+        .leaderboard-dropdown.closed {
+            padding: 0 15px;
+        }
+
+        .leaderboard-title {
+            color: #fbbf24;
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .leaderboard-entry {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px 10px;
+            margin: 3px 0;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .leaderboard-entry:first-child {
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            color: #000;
+            font-weight: bold;
+        }
+
+        .leaderboard-entry:nth-child(2) {
+            background: linear-gradient(45deg, #c0c0c0, #e5e5e5);
+            color: #000;
+            font-weight: bold;
+        }
+
+        .leaderboard-entry:nth-child(3) {
+            background: linear-gradient(45deg, #cd7f32, #daa520);
+            color: white;
+            font-weight: bold;
+        }
+
+        .leaderboard-rank {
+            font-weight: bold;
+            margin-right: 10px;
+            min-width: 20px;
+        }
+
+        .leaderboard-name {
+            flex-grow: 1;
+            text-align: left;
+            margin-right: 10px;
+        }
+
+        .leaderboard-score {
+            font-weight: bold;
+        }
+
+        .empty-leaderboard {
+            color: rgba(255, 255, 255, 0.6);
+            font-style: italic;
+            padding: 20px;
+        }
+
         .score {
             color: white;
             font-size: 18px;
@@ -85,11 +183,11 @@
         }
 
         .game-over {
-            position: absolute; /* Changed from fixed to absolute */
+            position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.9); /* Made slightly more opaque */
+            background: rgba(0, 0, 0, 0.95);
             color: white;
             padding: 30px;
             border-radius: 15px;
@@ -97,10 +195,32 @@
             display: none;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             z-index: 1000;
-            border: 2px solid rgba(255, 255, 255, 0.3); /* Added border for better visibility */
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            min-width: 300px;
         }
 
-        .restart-btn {
+        .name-input-container {
+            margin: 15px 0;
+        }
+
+        .name-input {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 16px;
+            text-align: center;
+            max-width: 200px;
+            margin: 10px auto;
+            display: block;
+        }
+
+        .name-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .restart-btn, .submit-score-btn {
             background: #667eea;
             color: white;
             border: none;
@@ -108,14 +228,22 @@
             border-radius: 25px;
             cursor: pointer;
             font-size: 16px;
-            margin-top: 15px;
+            margin: 5px;
             transition: all 0.3s ease;
         }
 
-        .restart-btn:hover {
+        .restart-btn:hover, .submit-score-btn:hover {
             background: #5a67d8;
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .submit-score-btn {
+            background: #10b981;
+        }
+
+        .submit-score-btn:hover {
+            background: #059669;
         }
 
         @media (max-width: 500px) {
@@ -139,13 +267,29 @@
         </header>
 
         <div class="game-container">
-            <h2 class="game-title">Mincraft but everytime you get a block you get longer</h2>
+            <h2 class="game-title">Minecraft but everytime you get a block you get longer</h2>
+            
+            <button class="leaderboard-toggle" onclick="toggleLeaderboard()">Leaderboard</button>
+            
+            <div class="leaderboard-dropdown closed" id="leaderboardDropdown">
+                <div class="leaderboard-title">🏆 High Scores</div>
+                <div id="leaderboardContent">
+                    <div class="empty-leaderboard">No scores yet! Be the first to play!</div>
+                </div>
+            </div>
+
             <div class="score">Score: <span id="score">0</span></div>
             <canvas id="gameCanvas" width="400" height="400"></canvas>
             
             <div class="game-over" id="gameOver">
                 <h2>Game Over!</h2>
                 <p>Your Score: <span id="finalScore">0</span></p>
+                <div class="name-input-container" id="nameInputContainer" style="display: none;">
+                    <p>🎉 New high score! Enter your name:</p>
+                    <input type="text" class="name-input" id="playerName" placeholder="Enter name (10 chars max)" maxlength="10">
+                    <br>
+                    <button class="submit-score-btn" onclick="submitScore()">Submit Score</button>
+                </div>
                 <button class="restart-btn" onclick="restartGame()">Play Again</button>
             </div>
         </div>
@@ -157,6 +301,8 @@
         const scoreElement = document.getElementById('score');
         const gameOverElement = document.getElementById('gameOver');
         const finalScoreElement = document.getElementById('finalScore');
+        const nameInputContainer = document.getElementById('nameInputContainer');
+        const playerNameInput = document.getElementById('playerName');
 
         // Game variables
         const gridSize = 20;
@@ -171,7 +317,83 @@
         let score = 0;
         let gameRunning = false;
 
-        // Audio setup - Create multiple instances for better responsiveness
+        // Leaderboard functions
+        function getLeaderboard() {
+            const saved = localStorage.getItem('snakeLeaderboard');
+            return saved ? JSON.parse(saved) : [];
+        }
+
+        function saveLeaderboard(leaderboard) {
+            localStorage.setItem('snakeLeaderboard', JSON.stringify(leaderboard));
+        }
+
+        function isHighScore(newScore) {
+            const leaderboard = getLeaderboard();
+            return leaderboard.length < 10 || newScore > leaderboard[leaderboard.length - 1].score;
+        }
+
+        function addToLeaderboard(name, score) {
+            const leaderboard = getLeaderboard();
+            leaderboard.push({ name: name.trim() || 'Anonymous', score: score });
+            leaderboard.sort((a, b) => b.score - a.score);
+            
+            // Keep only top 10
+            if (leaderboard.length > 10) {
+                leaderboard.splice(10);
+            }
+            
+            saveLeaderboard(leaderboard);
+            updateLeaderboardDisplay();
+        }
+
+        function updateLeaderboardDisplay() {
+            const leaderboard = getLeaderboard();
+            const content = document.getElementById('leaderboardContent');
+            
+            if (leaderboard.length === 0) {
+                content.innerHTML = '<div class="empty-leaderboard">No scores yet! Be the first to play!</div>';
+                return;
+            }
+
+            let html = '';
+            leaderboard.forEach((entry, index) => {
+                const rank = index + 1;
+                let rankDisplay = rank;
+                if (rank === 1) rankDisplay = '🥇';
+                else if (rank === 2) rankDisplay = '🥈';
+                else if (rank === 3) rankDisplay = '🥉';
+                
+                html += `
+                    <div class="leaderboard-entry">
+                        <span class="leaderboard-rank">${rankDisplay}</span>
+                        <span class="leaderboard-name">${entry.name}</span>
+                        <span class="leaderboard-score">${entry.score}</span>
+                    </div>
+                `;
+            });
+            
+            content.innerHTML = html;
+        }
+
+        function toggleLeaderboard() {
+            const dropdown = document.getElementById('leaderboardDropdown');
+            dropdown.classList.toggle('open');
+            dropdown.classList.toggle('closed');
+        }
+
+        function submitScore() {
+            const name = playerNameInput.value.trim();
+            if (name.length > 10) {
+                alert('Name must be 10 characters or less!');
+                return;
+            }
+            
+            addToLeaderboard(name, score);
+            nameInputContainer.style.display = 'none';
+            playerNameInput.value = '';
+        }
+
+        // Audio setup
         const audioPool = [];
         const poolSize = 5;
         
@@ -275,6 +497,15 @@
         function gameOver() {
             gameRunning = false;
             finalScoreElement.textContent = score;
+            
+            // Check if it's a high score
+            if (score > 0 && isHighScore(score)) {
+                nameInputContainer.style.display = 'block';
+                playerNameInput.focus();
+            } else {
+                nameInputContainer.style.display = 'none';
+            }
+            
             gameOverElement.style.display = 'block';
         }
 
@@ -284,14 +515,22 @@
             dx = 0;
             dy = 0;
             score = 0;
-            gameRunning = false; // Wait for first move to start
+            gameRunning = false;
             scoreElement.textContent = score;
             gameOverElement.style.display = 'none';
+            nameInputContainer.style.display = 'none';
+            playerNameInput.value = '';
             generateFood();
         }
 
         // Handle keyboard input
         document.addEventListener('keydown', (e) => {
+            // Handle Enter key for name input
+            if (e.code === 'Enter' && nameInputContainer.style.display === 'block') {
+                submitScore();
+                return;
+            }
+
             // Prevent default behavior for arrow keys
             if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) {
                 e.preventDefault();
@@ -303,28 +542,28 @@
                 case 'KeyW':
                     if (dy !== 1) { 
                         dx = 0; dy = -1; 
-                        gameRunning = true; // Start game on first move
+                        gameRunning = true;
                     }
                     break;
                 case 'ArrowDown':
                 case 'KeyS':
                     if (dy !== -1) { 
                         dx = 0; dy = 1; 
-                        gameRunning = true; // Start game on first move
+                        gameRunning = true;
                     }
                     break;
                 case 'ArrowLeft':
                 case 'KeyA':
                     if (dx !== 1) { 
                         dx = -1; dy = 0; 
-                        gameRunning = true; // Start game on first move
+                        gameRunning = true;
                     }
                     break;
                 case 'ArrowRight':
                 case 'KeyD':
                     if (dx !== -1) { 
                         dx = 1; dy = 0; 
-                        gameRunning = true; // Start game on first move
+                        gameRunning = true;
                     }
                     break;
             }
@@ -354,19 +593,19 @@
                 // Horizontal swipe
                 if (diffX > 0 && dx !== 1) {
                     dx = -1; dy = 0; // Left
-                    gameRunning = true; // Start game on first move
+                    gameRunning = true;
                 } else if (diffX < 0 && dx !== -1) {
                     dx = 1; dy = 0; // Right
-                    gameRunning = true; // Start game on first move
+                    gameRunning = true;
                 }
             } else {
                 // Vertical swipe
                 if (diffY > 0 && dy !== 1) {
                     dx = 0; dy = -1; // Up
-                    gameRunning = true; // Start game on first move
+                    gameRunning = true;
                 } else if (diffY < 0 && dy !== -1) {
                     dx = 0; dy = 1; // Down
-                    gameRunning = true; // Start game on first move
+                    gameRunning = true;
                 }
             }
 
@@ -384,6 +623,7 @@
 
         // Initialize game
         generateFood();
+        updateLeaderboardDisplay();
         setInterval(gameLoop, 100);
 
         // Start drawing
