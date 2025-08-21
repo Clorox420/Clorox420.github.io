@@ -52,6 +52,7 @@
         }
 
         .game-container {
+            position: relative; /* Added this for absolute positioning context */
             text-align: center;
             background: rgba(255, 255, 255, 0.1);
             border-radius: 20px;
@@ -84,11 +85,11 @@
         }
 
         .game-over {
-            position: fixed;
+            position: absolute; /* Changed from fixed to absolute */
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.9); /* Made slightly more opaque */
             color: white;
             padding: 30px;
             border-radius: 15px;
@@ -96,6 +97,7 @@
             display: none;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             z-index: 1000;
+            border: 2px solid rgba(255, 255, 255, 0.3); /* Added border for better visibility */
         }
 
         .restart-btn {
@@ -140,13 +142,13 @@
             <h2 class="game-title">Mincraft but everytime you get a block you get longer</h2>
             <div class="score">Score: <span id="score">0</span></div>
             <canvas id="gameCanvas" width="400" height="400"></canvas>
+            
+            <div class="game-over" id="gameOver">
+                <h2>Game Over!</h2>
+                <p>Your Score: <span id="finalScore">0</span></p>
+                <button class="restart-btn" onclick="restartGame()">Play Again</button>
+            </div>
         </div>
-    </div>
-
-    <div class="game-over" id="gameOver">
-        <h2>Game Over!</h2>
-        <p>Your Score: <span id="finalScore">0</span></p>
-        <button class="restart-btn" onclick="restartGame()">Play Again</button>
     </div>
 
     <script>
@@ -169,9 +171,25 @@
         let score = 0;
         let gameRunning = false;
 
-        // Audio setup
-        const bonkSound = new Audio('Bonk.mp3');
-        bonkSound.volume = 1.0; // 100% volume
+        // Audio setup - Create multiple instances for better responsiveness
+        const audioPool = [];
+        const poolSize = 5;
+        
+        for (let i = 0; i < poolSize; i++) {
+            const audio = new Audio('Bonk.mp3');
+            audio.volume = 1.0;
+            audio.preload = 'auto';
+            audioPool.push(audio);
+        }
+        
+        let currentAudioIndex = 0;
+        
+        function playBonkSound() {
+            const audio = audioPool[currentAudioIndex];
+            audio.currentTime = 0;
+            audio.play().catch(e => console.log('Audio play failed:', e));
+            currentAudioIndex = (currentAudioIndex + 1) % poolSize;
+        }
 
         // Generate random food position
         function generateFood() {
@@ -244,9 +262,8 @@
                 score += 1;
                 scoreElement.textContent = score;
                 
-                // Play bonk sound when snake grows
-                bonkSound.currentTime = 0; // Reset to start in case it's still playing
-                bonkSound.play().catch(e => console.log('Audio play failed:', e));
+                // Play bonk sound immediately when collision detected
+                playBonkSound();
                 
                 generateFood();
             } else {
